@@ -1,0 +1,31 @@
+# Sensitive Credentials
+*.env
+inventory.yml
+vars/vars.yml
+*secret*
+*credentials*
+
+# SSH Keys
+*.pem
+*.key
+id_rsa*
+
+# Ansible Specific
+*.retry
+
+# Logs
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Temporary Files
+*.tmp
+*~
+
+# Dependency Directories
+venv/
+.venv/
+__pycache__/
+*.pyc
