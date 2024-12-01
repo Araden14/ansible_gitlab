@@ -17,8 +17,11 @@ WORKDIR /ansible
 # Copy Ansible files into the container
 COPY . /ansible/
 
-# Set entrypoint to Ansible
-ENTRYPOINT ["ansible-playbook"]
+# Make entrypoint script executable
+RUN chmod +x /ansible/docker-entrypoint.sh
+
+# Set entrypoint
+ENTRYPOINT ["/ansible/docker-entrypoint.sh"]
 
 # Default command
-CMD ["--version"]
+CMD ["ansible-playbook", "--version"]
