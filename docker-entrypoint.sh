@@ -45,7 +45,6 @@ EOF
 chmod +x /ansible/docker-entrypoint.sh
 
 # Update vars.yml with environment variables
-sed -i "s/postgresql_host: \"\"/postgresql_host: \"$DB_HOST\"/" /ansible/vars/vars.yml
 sed -i "s/db_user: \"\"/db_user: \"$DB_USER\"/" /ansible/vars/vars.yml
 sed -i "s/db_password: \"\"/db_password: \"$DB_PASSWORD\"/" /ansible/vars/vars.yml
 sed -i "s/owner: \"\"/owner: \"$DB_USER\"/" /ansible/vars/vars.yml

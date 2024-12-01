@@ -3,7 +3,7 @@ services:
   ansible:
     build: .
     environment:
-      - DB_HOST=${DB_HOST}
+      - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - TARGET_HOST=${TARGET_HOST}
