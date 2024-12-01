@@ -1,27 +1,36 @@
-# Base image
-FROM python:3.9-slim
+FROM debian:bullseye-slim
 
 # Set environment variables
-ENV ANSIBLE_VERSION=2.14.5
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies and Ansible
+# Install Ansible and dependencies via APT
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    python3 \
+    python3-pip \
+    python3-setuptools \
     sshpass \
     openssh-client \
-    && pip install --no-cache-dir ansible==$ANSIBLE_VERSION \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    ansible \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set work directory
+# Verify Ansible installation
+RUN ansible --version
+
+# Set working directory
 WORKDIR /ansible
 
-# Copy Ansible files into the container
-COPY . /ansible/
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Make entrypoint script executable
-RUN chmod +x /ansible/docker-entrypoint.sh
+# Copy project files
+COPY . /ansible
 
 # Set entrypoint
-ENTRYPOINT ["/ansible/docker-entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Default command
-CMD ["ansible-playbook", "--version"]
+CMD ["ansible-playbook", "site.yml"]

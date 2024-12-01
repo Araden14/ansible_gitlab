@@ -1,15 +1,13 @@
+version: '3'
 services:
   ansible:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - TARGET_HOST=${TARGET_HOST}
+      - TARGET_USER=${TARGET_USER}
+      - TARGET_PASSWORD=${TARGET_PASSWORD}
     volumes:
       - .:/ansible
-      - ${SSH_KEY_PATH:-~/.ssh}:/root/.ssh:ro  # Mount SSH keys if needed
-    env_file:
-      - .env
-    environment:
-      - ANSIBLE_HOST_KEY_CHECKING=False
-      - ANSIBLE_FORCE_COLOR=true
-    # Default command can be overridden via command line
-    command: site.yml 
