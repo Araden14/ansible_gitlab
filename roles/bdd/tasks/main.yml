@@ -1,0 +1,84 @@
+- name: Add PostgreSQL GPG key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add PostgreSQL repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main
+    state: present
+
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Install PostgreSQL 14
+  apt:
+    name:
+      - postgresql-14
+      - postgresql-contrib-14
+      - python3-psycopg2
+    state: present
+
+- name: Start and enable postgresql
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Modify pg_hba.conf - Allow remote connections
+  replace:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    regexp: '127\.0\.0\.1/32'
+    replace: '0.0.0.0/0'
+  become: yes
+
+- name: Modify pg_hba.conf - Change peer to trust
+  replace:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    regexp: 'local\s+all\s+postgres\s+peer'
+    replace: 'local all postgres trust'
+  become: yes
+  notify: restart postgresql
+
+- name: Create PostgreSQL user
+  postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    role_attr_flags: "{{ postgresql_user_privileges }}"
+  become: yes
+  become_user: postgres
+
+- name: Create PostgreSQL databases
+  postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ item.owner }}"
+    encoding: "{{ postgresql_encoding }}"
+    state: present
+  with_items: "{{ postgresql_databases }}"
+  become: yes
+  become_user: postgres
+
+- name: Grant all privileges on databases to user
+  postgresql_privs:
+    db: "{{ item.name }}"
+    role: "{{ db_user }}"
+    type: database
+    privs: ALL
+    state: present
+  with_items: "{{ postgresql_databases }}"
+  become: yes
+  become_user: postgres
+
+- name: Configure postgresql.conf to listen on all interfaces
+  lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf
+    regexp: '^#?listen_addresses'
+    line: "listen_addresses = '*'"
+  notify: restart postgresql
+
+- name: Print PostgreSQL status
+  shell: systemctl status postgresql
+  register: postgresql_status
+  failed_when: postgresql_status.rc != 0
+  changed_when: false

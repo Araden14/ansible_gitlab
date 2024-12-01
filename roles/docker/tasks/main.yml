@@ -1,0 +1,53 @@
+#docker/tasks/main.yml
+
+---
+
+# - name: Add Docker GPG key
+#   apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
+
+# - name: Determine correct repository for Docker
+#   set_fact:
+#     docker_repo_url: >-
+#       {% if ansible_distribution == 'Debian' %}
+#       https://download.docker.com/linux/debian
+#       {% else %}
+#       https://download.docker.com/linux/ubuntu
+#       {% endif %}
+
+# - name: Add Docker repository
+#   apt_repository:
+#     repo: "deb [arch=amd64] {{ docker_repo_url }} {{ ansible_distribution_release }} stable"
+#     state: present
+
+# - name: Install Docker
+#   apt:
+#     name: docker-ce
+#     state: present
+#     update_cache: yes
+
+# - name: Install Docker Compose
+#   get_url:
+#     url: "https://github.com/docker/compose/releases/download/v2.31.0/docker-compose-Linux-x86_64"
+#     dest: /usr/local/bin/docker-compose
+#     mode: '0755'
+#   when: docker_install_compose | bool
+
+# - name: Ensure Docker service is started and enabled
+#   service:
+#     name: docker
+#     state: started
+#     enabled: yes
+
+# - name: Add users to Docker group
+#   user:
+#     name: "{{ item }}"
+#     groups: docker
+#     append: yes
+#   with_items: "{{ docker_users }}"
+
+# - name: Create docker-compose file
+#   template:
+#     src: docker-compose.yml.j2
+#     dest: docker-compose.yml

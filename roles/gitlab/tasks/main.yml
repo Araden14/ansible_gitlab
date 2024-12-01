@@ -1,0 +1,46 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Add GitLab repository
+  shell: |
+    curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+
+- name: Set locale environment variables
+  shell: |
+    export LC_CTYPE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+- name: Install GitLab CE 17
+  apt:
+    name: gitlab-ce=17.0.0-ce.0
+    state: present
+    update_cache: yes
+
+
+- name: Configure GitLab database settings
+  template:
+    src: gitlab.rb.j2
+    dest: /etc/gitlab/gitlab.rb
+  vars:
+    gitlab_db_host: '{{ postgresql_host }}'
+    gitlab_db_port: '{{ postgresql_port }}'
+    gitlab_db_name: "{{ project_environment | default('dev') | regex_replace('prod', 'prod') | regex_replace('stage', 'stage') | regex_replace('dev', 'dev') }}"
+    gitlab_db_user: "{{ db_user }}"
+    gitlab_db_password: "{{ db_password }}"
+
+- name: Restart postgresql
+  shell: |
+    systemctl restart postgresql && systemctl status postgresql
+
+- name: Configure GitLab
+  shell: |
+    gitlab-ctl reconfigure
+  become: yes
+
+- name: Start GitLab service
+  shell: |
+    gitlab-ctl start
+  become: yes
+

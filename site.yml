@@ -1,0 +1,10 @@
+#Site.yml
+---
+- hosts: gitlab_servers
+  vars_files:
+    - vars/vars.yml
+  roles:
+    - role: common
+    - role: docker
+    - role: bdd
+    - role: gitlab

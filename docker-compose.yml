@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/ansible
+      - ~/.ssh:/root/.ssh:ro  # Mount SSH keys if needed
+    environment:
+      - ANSIBLE_CONFIG=/ansible/ansible.cfg
+    # Default command can be overridden via command line
+    command: site.yml 
