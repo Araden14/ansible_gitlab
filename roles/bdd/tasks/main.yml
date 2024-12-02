@@ -32,7 +32,8 @@
     regexp: '127\.0\.0\.1/32'
     replace: '0.0.0.0/0'
   become: yes
-
+  notify: restart postgresql
+  
 - name: Modify pg_hba.conf - Change peer to trust
   replace:
     path: /etc/postgresql/14/main/pg_hba.conf

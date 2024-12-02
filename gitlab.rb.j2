@@ -2,7 +2,7 @@
    postgresql['enable'] = false
    gitlab_rails['db_adapter'] = "postgresql"
    gitlab_rails['db_encoding'] = "unicode"
-   gitlab_rails['db_database'] = "{{ gitlab_db_name }}"
+   gitlab_rails['db_database'] = "gitlab_{{ project_environment }}"
    gitlab_rails['db_username'] = "{{ gitlab_db_user }}"
    gitlab_rails['db_password'] = "{{ gitlab_db_password }}"
    gitlab_rails['db_host'] = "{{ gitlab_db_host }}"

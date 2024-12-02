@@ -5,6 +5,5 @@
     - vars/vars.yml
   roles:
     - role: common
-    - role: docker
     - role: bdd
     - role: gitlab
